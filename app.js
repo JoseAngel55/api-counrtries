@@ -5,10 +5,11 @@ const seedRoutes = require("./src/routes/seedRoutes");
 const userRoutes = require("./src/routes/userRoutes");
 
 const app = express();
+const PORT = process.env.PORT || 3000;
 app.use(express.json());
 
 app.use("/countries", countriesRoutes);
 app.use("/seed", seedRoutes);
 app.use("/users", userRoutes);
 
-app.listen(3000, () => console.log("Servidor en http://localhost:3000"));
+app.listen(PORT, () => console.log(`Servidor en http://localhost:${PORT}`));
