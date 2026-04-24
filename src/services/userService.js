@@ -1,11 +1,11 @@
 require("dotenv").config();
 const supabase = require("../../config/supabase");
 
-async function createUser({ idUsuario, username, hash, provider }) {
+async function createUser({ username, hash, provider }) {
     const { data: existing } = await supabase
         .from("users")
         .select("id")
-        .eq("idUsuario", idUsuario)
+        .eq("username", username)
         .eq("provider", provider)
         .single();
 
@@ -13,25 +13,27 @@ async function createUser({ idUsuario, username, hash, provider }) {
 
     const { data, error } = await supabase
         .from("users")
-        .insert({ idUsuario, username, hash, provider })
+        .insert({
+            username,
+            hash:     hash ?? null,
+            provider: provider ?? "local",
+        })
         .select()
         .single();
 
     if (error) throw error;
-
     return { user: data, created: true };
 }
 
-async function findUser({ idUsuario, provider }) {
+async function findUser({ username, provider }) {
     const { data, error } = await supabase
         .from("users")
         .select()
-        .eq("idUsuario", idUsuario)
+        .eq("username", username)
         .eq("provider", provider)
         .single();
 
     if (error) throw error;
-
     return data;
 }
 

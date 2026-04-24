@@ -2,13 +2,17 @@ const { createUser, findUser } = require("../services/userService");
 
 async function register(req, res) {
     try {
-        const { idUsuario, username, hash, provider } = req.body;
+        const { username, hash, provider } = req.body;
 
-        if (!idUsuario || !username || !hash || !provider) {
-            return res.status(400).json({ error: "Faltan campos requeridos" });
+        if (!username) {
+            return res.status(400).json({ error: "El username es requerido" });
         }
 
-        const { user, created } = await createUser({ idUsuario, username, hash, provider });
+        const { user, created } = await createUser({
+            username,
+            hash,
+            provider: provider ?? "local",
+        });
 
         if (!created) {
             return res.status(409).json({ message: "Usuario ya existe", user });
@@ -24,19 +28,23 @@ async function register(req, res) {
 
 async function login(req, res) {
     try {
-        const { idUsuario, provider } = req.query;
+        const { username, provider, hash } = req.query;
 
-        if (!idUsuario || !provider) {
-            return res.status(400).json({ error: "Faltan campos requeridos" });
+        if (!username) {
+            return res.status(400).json({ error: "El username es requerido" });
         }
 
-        const user = await findUser({ idUsuario, provider });
+        const user = await findUser({ username, provider: provider ?? "local" });
 
         if (!user) {
             return res.status(404).json({ error: "Usuario no encontrado" });
         }
 
-        res.json({ message: "Usuario encontrado", user });
+        if ((provider === "local" || !provider) && user.hash !== hash) {
+            return res.status(401).json({ error: "Contraseña incorrecta" });
+        }
+
+        res.json({ message: "Login exitoso", user });
 
     } catch (err) {
         console.error("Error en login:", err.message);
