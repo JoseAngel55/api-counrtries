@@ -20,6 +20,7 @@
   },
   "homepage": "https://github.com/JoseAngel55/api-counrtries#readme",
   "dependencies": {
+    "@supabase/supabase-js": "^2.104.1",
     "axios": "^1.15.2",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
